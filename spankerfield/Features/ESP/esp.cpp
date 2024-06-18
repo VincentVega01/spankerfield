@@ -5,6 +5,7 @@
 #include "../../Utilities/w2s.h"
 #include "../../Utilities/other.h"
 #include "../../Rendering/nicknames.h"
+#include "../../global.h"
 
 using namespace big;
 namespace plugins
@@ -256,6 +257,21 @@ namespace plugins
 					draw_bone(g_settings.skeleton_color, ragdoll_component, UpdatePoseResultData::Spine, UpdatePoseResultData::LeftKneeRoll, dots);
 					draw_bone(g_settings.skeleton_color, ragdoll_component, UpdatePoseResultData::RightKneeRoll, UpdatePoseResultData::RightFoot, dots);
 					draw_bone(g_settings.skeleton_color, ragdoll_component, UpdatePoseResultData::LeftKneeRoll, UpdatePoseResultData::LeftFoot, dots);		
+				}
+			}
+		}
+		
+		if (g_settings.esp_draw_aim_point)
+		{
+			if (g_globals.g_hasPredictedAimPoint)
+			{
+				Vector2 aimpoint_screen_coords;
+				if (world_to_screen(g_globals.g_pred_aim_point, aimpoint_screen_coords))
+				{
+					m_drawing->AddCircleFilled(
+						ImVec2(aimpoint_screen_coords.x, aimpoint_screen_coords.y),
+						6.0f,
+						g_settings.esp_aim_point_color);
 				}
 			}
 		}

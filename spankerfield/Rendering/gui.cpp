@@ -100,6 +100,8 @@ namespace big
 			{
 				ImGui::Checkbox(xorstr_("Aimbot"), &g_settings.aimbot);
 				ImGui::SameLine();
+				ImGui::Checkbox(xorstr_("Aim Point Only"), &g_settings.aim_point_only);
+				ImGui::SameLine();
 				ImGui::Checkbox(xorstr_("FOV target selection"), &g_settings.aim_fov_method);
 				ImGui::SameLine();
 				ImGui::Checkbox(xorstr_("No recoil"), &g_settings.no_recoil);
@@ -253,6 +255,9 @@ namespace big
 				ImGui::Checkbox(xorstr_("Draw distance"), &g_settings.esp_draw_distance);
 				ImGui::SameLine();
 				ImGui::Checkbox(xorstr_("Draw vehicle tag"), &g_settings.esp_draw_vehicle_tag);
+
+				ImGui::Checkbox(xorstr_("Draw Aim Point"), &g_settings.esp_draw_aim_point);
+				color_wrapper(xorstr_("Aim Point##APC"), &g_settings.esp_aim_point_color);
 
 				ImGui::Separator();
 
