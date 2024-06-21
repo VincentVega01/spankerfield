@@ -214,8 +214,6 @@ namespace big
 		const auto local_player = player_manager->m_pLocalPlayer;
 		if (!IsValidPtrWithVTable(local_player)) return;
 
-		float fov_radius = get_fov_radius(g_settings.aim_fov, (float)g_globals.g_width, (float)g_globals.g_height);
-
 		for (const auto player : m_PlayerList)
 		{
 			if (!IsValidPtrWithVTable(player))
@@ -275,11 +273,11 @@ namespace big
 			if (screen_vec.x > screen_size.x || screen_vec.y > screen_size.y)
 				continue;
 
-			float screen_distance = get_screen_distance(screen_vec, screen_size);
+			float screen_distance = get_screen_distance(screen_vec, get_screen_size());
 			if (g_settings.aim_fov_method)
 			{
-				if (screen_distance > fov_radius)
-					continue;
+				if (screen_distance > g_settings.aim_fov)
+					return;
 			}
 
 			if (screen_distance < closest_distance)
@@ -309,12 +307,12 @@ namespace big
 		return m_ClosestPlayer;
 	}
 
-	float BotPlayerManager::get_screen_distance(Vector3& enemy_screen, Vector2 screen_size)
+	float BotPlayerManager::get_screen_distance(Vector3& EnemyScreen, Vector2 ScreenSize)
 	{
-		Vector2 screen_center = screen_size / 2.0f;
-		Vector2 distance_from_center = Vector2(enemy_screen.x, enemy_screen.y) - screen_center;
+		ScreenSize /= 2;
+		Vector2 DistanceFromCenter = Vector2(EnemyScreen.x, EnemyScreen.y) - ScreenSize;
 
-		return distance_from_center.Length();
+		return DistanceFromCenter.Length();
 	}
 }
 
@@ -390,21 +388,22 @@ namespace plugins
 		AimbotTarget target = m_PlayerManager.get_closest_crosshair_player();
 		if (!IsValidPtr(target.m_Player)) return;
 
-		if (!target.m_HasTarget)
-		{
-			g_globals.g_hasPredictedAimPoint = false;
-			return;
-		}
-		else
-		{
-			g_globals.g_hasPredictedAimPoint = true;
-		}
+		if (!target.m_HasTarget) return;
 
 		Vector3 temporary_aim = target.m_WorldPosition;
 		float zero_theta_offset = m_AimbotPredictor.PredictLocation(local_soldier, target.m_Player->GetSoldier(), temporary_aim, shoot_space);
 		target.m_WorldPosition = temporary_aim;
 
 		g_globals.g_pred_aim_point = target.m_WorldPosition;
+
+		if (target.m_HasTarget)
+		{
+			g_globals.g_hasPredictedAimPoint = true;
+		}
+		else
+		{
+			g_globals.g_hasPredictedAimPoint = false;
+		}
 
 		if (g_settings.aim_max_time_to_target <= 0.f) return;
 
@@ -421,7 +420,8 @@ namespace plugins
 		m_AimbotSmoother.Update(delta_time);
 
 		Vector3 vDir = target.m_WorldPosition - shoot_space.Translation();
-		vDir.Normalize();
+		float horizontal_distance = sqrt(vDir.x * vDir.x + vDir.z * vDir.z);
+		//vDir.Normalize();
 
 		// Vertical angle
 		float vertical_angle = atan2(vDir.y, sqrt(vDir.x * vDir.x + vDir.z * vDir.z));
@@ -436,14 +436,17 @@ namespace plugins
 
 		BotAngles -= aiming_simulation->m_Sway;
 		BotAngles.y -= zero_theta_offset;
-		m_AimbotSmoother.SmoothAngles(aim_assist->m_AimAngles, BotAngles);
-		aim_assist->m_AimAngles = BotAngles;
+		if (!g_settings.aim_point_only)
+		{
+			m_AimbotSmoother.SmoothAngles(aim_assist->m_AimAngles, BotAngles);
+			aim_assist->m_AimAngles = BotAngles;
+		}
 		m_PreviousTarget = target;
 	}
 
 	void draw_fov()
 	{
-		if (!g_settings.aim_fov_method) return;
+		if (!g_settings.aimbot) return;
 
 		const auto game_context = ClientGameContext::GetInstance();
 		if (!game_context) return;
