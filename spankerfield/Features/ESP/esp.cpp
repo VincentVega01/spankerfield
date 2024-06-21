@@ -14,7 +14,7 @@ namespace plugins
 	{
 		if (!IsValidPtr(ragdoll))
 			return;
-
+		
 		Vector3 bone_1_vec;
 		if (!ragdoll->GetBone(bone_1, bone_1_vec))
 			return;
@@ -76,8 +76,7 @@ namespace plugins
 			const auto soldier = player->GetSoldier();
 			if (!soldier) continue;
 
-			if (!soldier->IsAlive())
-				continue;
+			if (!soldier->IsAlive()) continue;
 
 			TransformAABBStruct transform = get_transform(player);
 			TransformAABBStruct local_transform = get_transform(local_player);;
@@ -104,9 +103,10 @@ namespace plugins
 				nickname = streamer_personas[persona_id].empty() ? xorstr_("Unknown") : streamer_personas[persona_id].c_str();
 			}
 
+			// Distance
 			float distance = get_distance(pos, local_pos);
-			RagdollComponent* ragdoll_component = soldier->m_pRagdollComponent;
 
+			// Vehicle
 			ClientVehicleEntity* vehicle = player->GetVehicle();
 			if (!g_settings.esp_draw_vehicles && vehicle)
 				continue;
@@ -154,7 +154,8 @@ namespace plugins
 					ImVec2 box_center = ImVec2(box_coords[0].x + box_width / 2.0f, box_coords[0].y + box_height / 2.0f);
 					ImVec2 drawing_from;
 
-					switch (g_settings.esp_draw_line_from) {
+					switch (g_settings.esp_draw_line_from)
+					{
 					case 0:
 						drawing_from = ImVec2(ImGui::GetIO().DisplaySize.x / 2.0f, ImGui::GetIO().DisplaySize.y / 2.0f);
 						break;
@@ -207,7 +208,8 @@ namespace plugins
 				if (vehicle)
 				{
 					int entry_id = player->m_AttachedEntryId;
-					if (entry_id != 0)
+
+					if (entry_id)
 						allow_text = false;
 				}
 
@@ -243,6 +245,8 @@ namespace plugins
 						if (distance <= g_settings.skeleton_dots_distance)
 							dots = true;
 					}
+
+					RagdollComponent* ragdoll_component = soldier->m_pRagdollComponent;
 
 					draw_bone(g_settings.skeleton_color, ragdoll_component, UpdatePoseResultData::Head, UpdatePoseResultData::Neck, dots);
 					draw_bone(g_settings.skeleton_color, ragdoll_component, UpdatePoseResultData::Neck, UpdatePoseResultData::Spine2, dots);
