@@ -49,7 +49,8 @@ namespace plugins
 		}
 
 		if ((vehicle_data->IsInJet())
-			&& (!border_input_node->m_pKeyboard->m_pDevice->m_Current[BYTE(Keyboard::InputKeys::IDK_Space)]))	// disable while braking
+			&& (!border_input_node->m_pKeyboard->m_pDevice->m_Current[BYTE(Keyboard::InputKeys::IDK_Space)])	// disable while braking
+			&& (g_settings.jet_isActive))	
 		{
 			const auto input_cache = border_input_node->m_InputCache;
 			if (!input_cache) return;
@@ -62,33 +63,30 @@ namespace plugins
 			switch (vehicle_data->GetVehicleType()) 
 			{
 				case VehicleData::VehicleType::JET:
-					if (g_settings.jet_isActive)
+					if (velocity < 314.f && velocity > 311.f)
 					{
-						if (velocity < 314.f && velocity > 311.f)
-						{
-							input[ConceptMoveForward] = 1.0f;
-							input[ConceptMoveFB] = 1.0f;
-							input[ConceptFreeCameraMoveFB] = 1.0f;
-							input[ConceptFreeCameraTurboSpeed] = 0.0f;
-							input[ConceptSprint] = 0.0f;
-						}
-						else if (velocity >= 315.f)
-						{
-							input[ConceptMoveBackward] = 1.0f;
-							input[ConceptMoveFB] = -1.0f;
-							input[ConceptFreeCameraMoveFB] = -1.0f;
-							input[ConceptFreeCameraTurboSpeed] = 0.0f;
-							input[ConceptSprint] = 0.0f;
-							input[ConceptBrake] = 1.0f;
-							input[ConceptCrawl] = 1.0f;
-						}
-						else if (velocity <= 311.f)
-						{
-							input[ConceptMoveFB] = 1.0f;
-							input[ConceptFreeCameraMoveFB] = 1.0f;
-							input[ConceptFreeCameraTurboSpeed] = 1.0f;
-							input[ConceptSprint] = 1.0f;
-						}
+						input[ConceptMoveForward] = 1.0f;
+						input[ConceptMoveFB] = 1.0f;
+						input[ConceptFreeCameraMoveFB] = 1.0f;
+						input[ConceptFreeCameraTurboSpeed] = 0.0f;
+						input[ConceptSprint] = 0.0f;
+					}
+					else if (velocity >= 315.f)
+					{
+						input[ConceptMoveBackward] = 1.0f;
+						input[ConceptMoveFB] = -1.0f;
+						input[ConceptFreeCameraMoveFB] = -1.0f;
+						input[ConceptFreeCameraTurboSpeed] = 0.0f;
+						input[ConceptSprint] = 0.0f;
+						input[ConceptBrake] = 1.0f;
+						input[ConceptCrawl] = 1.0f;
+					}
+					else if (velocity <= 311.f)
+					{
+						input[ConceptMoveFB] = 1.0f;
+						input[ConceptFreeCameraMoveFB] = 1.0f;
+						input[ConceptFreeCameraTurboSpeed] = 1.0f;
+						input[ConceptSprint] = 1.0f;
 					}
 					return;
 				case VehicleData::VehicleType::JETBOMBER:
