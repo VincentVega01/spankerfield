@@ -260,6 +260,7 @@ namespace plugins
 				}
 			}
 		}
+
 		if (g_globals.g_hasPredictedAimPoint && g_settings.esp_draw_aim_point)
 		{			
 			Vector2 aimpoint_screen_coords;
@@ -267,7 +268,7 @@ namespace plugins
 			{
 				m_drawing->AddCircleFilled(
 					ImVec2(aimpoint_screen_coords.x, aimpoint_screen_coords.y),
-					6.0f,
+					5.0f,
 					g_settings.esp_aim_point_color);
 			}
 		}
