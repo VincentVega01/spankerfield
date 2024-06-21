@@ -109,6 +109,9 @@ namespace big
 			return 0.0f;
 		}
 
+		if (shortest_air_time == FLT_MAX)
+			return 0.0f; // No valid solution found
+
 		// Extrapolate position on velocity, and account for bullet drop
 		aim_point = f_approx_pos(aim_point, enemy_velocity, gravity_vec, shortest_air_time);
 
