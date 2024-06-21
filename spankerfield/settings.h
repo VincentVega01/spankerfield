@@ -18,7 +18,7 @@ namespace big
 		char original_name[16];
 		char spoofed_name[16];
 
-		bool aimbot{ false };
+		bool aimbot{ true };
 		bool aim_point_only{ true };
 		bool aim_fov_method{ true };
 		bool aim_draw_fov;
