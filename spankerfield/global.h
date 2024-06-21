@@ -22,6 +22,9 @@ namespace big
 		int screenshots_ff;
 		int screenshots_pb;
 
+		Vector3 g_pred_aim_point{ 0.0f, 0.0f, 0.0f};
+		bool g_hasPredictedAimPoint{ false };
+
 		bool g_obs;
 	};
 

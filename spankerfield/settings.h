@@ -11,29 +11,30 @@ namespace big
 		ImColor blacklist_color{ 255, 0, 0, 255 };
 		float blacklist_text_size{ 26.f };
 
-		bool streamer_mode;
+		bool streamer_mode{ false };
 
-		bool spoof_name;
-		bool spoof_restore;
+		bool spoof_name{ false };
+		bool spoof_restore{ false };
 		char original_name[16];
 		char spoofed_name[16];
 
-		bool aimbot;
+		bool aimbot{ true };
+		bool aim_point_only{ true };
 		bool aim_fov_method{ true };
 		bool aim_draw_fov;
 		float aim_fov{ 90.f };
 		float aim_min_time_to_target{ 0.4f };
 		float aim_max_time_to_target{ 0.8f };
-		int aim_key{ VK_LMENU };
+		int aim_key{ VK_RBUTTON };
 		int aim_bone{ UpdatePoseResultData::BONES::Head };
 
-		bool no_recoil;
+		bool no_recoil{ false };
 
 		bool anti_afk{ true };
 		int anti_afk_timer{ 150000 };
 
-		bool unlock_all;
-		bool no_hc_restrictions;
+		bool unlock_all{ false };
+		bool no_hc_restrictions{ false };
 
 		bool overheat_control{ true };
 		float overheat_control_critical{ 0.50f };
@@ -53,6 +54,9 @@ namespace big
 		float esp_distance{ 10000.f };
 		ImColor esp_teammate_color{ 63, 147, 216, 255 };
 		ImColor esp_additional_tags_color{ 228, 213, 106, 255 };
+
+		bool esp_draw_aim_point{ true };
+		ImColor esp_aim_point_color{ 0, 255, 0, 255 };
 
 		bool esp_draw_box{ true };
 		int esp_box_style{ 4 };
@@ -116,6 +120,7 @@ namespace big
 		ImColor missiles_color{ 14, 231, 231, 255 };
 
 		bool jet_speed{ true };
+		bool jet_isActive{ true };
 
 		bool spectator_list{ true };
 		bool spectator_raw_drawing;
