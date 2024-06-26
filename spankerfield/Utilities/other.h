@@ -1,9 +1,26 @@
 #pragma once
 #include "../SDK/sdk.h"
 #include "../ImGui/imgui.h"
+#include <atomic>
+#include <thread>
+#include <functional>
+#include <chrono>
 
 namespace big
 {
+    class Timer {
+    public:
+        Timer();
+
+        void start(int interval, std::function<void()> task);
+        void stop();
+        bool is_expired() const;
+
+    private:
+        std::atomic<bool> m_expired;
+        std::atomic<bool> m_try_to_expire;
+    };
+
 	ClientPlayer* get_player_by_name(std::string nick);
 
 	bool color_wrapper(const char* label, ImColor* color);

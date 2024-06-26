@@ -112,6 +112,7 @@ namespace big
 				ImGui::Checkbox(xorstr_("Don't aim while reloading"), &g_settings.aim_must_not_reload);
 				if (ImGui::IsItemHovered())
 					ImGui::SetTooltip(xorstr_("Will not aim at enemies if your weapon is reloading."));
+				ImGui::Checkbox(xorstr_("Autofire"), &g_settings.autofire);
 
 				ImGui::Checkbox(xorstr_("No recoil (BF4DB risk)"), &g_settings.no_recoil);
 				ImGui::SameLine();

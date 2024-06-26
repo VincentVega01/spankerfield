@@ -155,6 +155,7 @@
     <ClCompile Include="Features\Infantry Alert\infantry_alert.cpp" />
     <ClCompile Include="Features\Jet Speed\jetspeed.cpp" />
     <ClCompile Include="Features\Kill Sound\kill_sound.cpp" />
+    <ClCompile Include="Features\Autofire\autofire.cpp" />
     <ClCompile Include="Features\main.cpp" />
     <ClCompile Include="Features\Minimap\minimap.cpp" />
     <ClCompile Include="Features\Missiles\missiles.cpp" />
@@ -212,6 +213,7 @@
     <ClInclude Include="Features\Health Bar\health_bar.h" />
     <ClInclude Include="Features\Infantry Alert\infantry_alert.h" />
     <ClInclude Include="Features\Kill Sound\kill_sound.h" />
+    <ClInclude Include="Features\Autofire\autofire.h" />
     <ClInclude Include="Features\Missiles\missiles.h" />
     <ClInclude Include="Features\Name Spoofer\name_spoofer.h" />
     <ClInclude Include="Features\Overheat\overheat.h" />

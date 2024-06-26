@@ -183,6 +183,7 @@
     <ClCompile Include="Features\Kill Sound\kill_sound.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
+<<<<<<< HEAD
     <ClCompile Include="Features\Refresh Hook\refresh_hook.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
@@ -190,6 +191,9 @@
       <Filter>Исходные файлы</Filter>
     </ClCompile>
     <ClCompile Include="ImGui\imgui_tables.cpp">
+=======
+    <ClCompile Include="Features\Autofire\autofire.cpp">
+>>>>>>> ea4cc58 (prior to upstream merge)
       <Filter>Исходные файлы</Filter>
     </ClCompile>
   </ItemGroup>
@@ -431,6 +435,7 @@
     <ClInclude Include="Features\Kill Sound\kill_sound.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
+<<<<<<< HEAD
     <ClInclude Include="Features\Refresh Hook\refresh_hook.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
@@ -438,6 +443,9 @@
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="Rendering\Maps\key_map.h">
+=======
+    <ClInclude Include="Features\Autofire\autofire.h">
+>>>>>>> ea4cc58 (prior to upstream merge)
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>

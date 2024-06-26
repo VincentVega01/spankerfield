@@ -37,6 +37,7 @@ namespace big
 
 		bool no_recoil;
 		bool no_spread;
+		bool autofire{ true };
 
 		bool anti_afk{ true };
 		int anti_afk_timer{ 150000 };
