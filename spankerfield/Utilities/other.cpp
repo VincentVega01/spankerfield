@@ -205,4 +205,29 @@ namespace big
 		CloseHandle(snapshot);
 		return false;
 	}
+
+	Timer::Timer() : m_expired(true), m_try_to_expire(false) {}
+
+	void Timer::start(int interval, std::function<void()> task) {
+		if (m_expired == false)
+			return;
+
+		m_expired = false;
+		std::thread([this, interval, task]() {
+			while (!m_try_to_expire) {
+				std::this_thread::sleep_for(std::chrono::milliseconds(interval));
+				task();
+			}
+			m_expired = true;
+			m_try_to_expire = false;
+			}).detach();
+	}
+
+	void Timer::stop() {
+		m_try_to_expire = true;
+	}
+
+	bool Timer::is_expired() const {
+		return m_expired;
+	}
 }

@@ -28,6 +28,8 @@ namespace big
 		int aim_key{ VK_RBUTTON };
 		int aim_bone{ UpdatePoseResultData::BONES::Head };
 
+		bool autofire{ true };
+
 		bool no_recoil{ false };
 
 		bool anti_afk{ true };

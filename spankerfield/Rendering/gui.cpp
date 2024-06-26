@@ -105,6 +105,7 @@ namespace big
 				ImGui::Checkbox(xorstr_("FOV target selection"), &g_settings.aim_fov_method);
 				ImGui::SameLine();
 				ImGui::Checkbox(xorstr_("No recoil"), &g_settings.no_recoil);
+				ImGui::Checkbox(xorstr_("Autofire"), &g_settings.autofire);
 
 				if (g_settings.aim_fov_method)
 				{

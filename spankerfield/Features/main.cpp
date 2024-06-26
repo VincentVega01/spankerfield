@@ -40,5 +40,6 @@ namespace big
 
 		plugins::spot_minimap();
 		plugins::set_jet_speed();
+		plugins::autofire();
 	}
 }
