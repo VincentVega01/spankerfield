@@ -1,6 +1,6 @@
 #include "spectators.h"
-#include "../../common.h"
 #include "../../settings.h"
+#include "../../global.h"
 #include "../../SDK/sdk.h"
 #include "../../Rendering/draw-list.h"
 #include "../../Rendering/gui.h"
@@ -20,7 +20,7 @@ namespace plugins
 		if (!player_manager) return;
 
 		const auto local_player = player_manager->m_pLocalPlayer;
-		if (!local_player) return;
+		if (!IsValidPtrWithVTable(local_player)) return;
 
 		// Vector for storing spectator names
 		std::vector<std::string> spectators{};
@@ -31,7 +31,7 @@ namespace plugins
 		for (int i = 0; i < MAX_PLAYERS; i++)
 		{
 			const auto player = player_manager->m_ppPlayers[i];
-			if (!player)
+			if (!IsValidPtrWithVTable(player))
 				continue;
 
 			if (player->m_IsSpectator)
@@ -71,7 +71,7 @@ namespace plugins
 			if (!set)
 			{
 				ImGui::SetNextWindowSize(ImVec2(250, 125.f), ImGuiCond_FirstUseEver);
-				ImGui::SetNextWindowPos(ImVec2(ImGui::GetIO().DisplaySize.x - 258.f, 8.f), ImGuiCond_FirstUseEver);
+				ImGui::SetNextWindowPos(ImVec2((float)g_globals.g_width - 260.f, 8.f), ImGuiCond_FirstUseEver);
 				set = true;
 			}
 

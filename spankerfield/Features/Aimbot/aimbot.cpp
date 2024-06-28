@@ -7,6 +7,8 @@
 #include "../../Utilities/other.h"
 #include "../../Rendering/draw-list.h"
 
+#pragma warning( disable : 4244 )
+
 using namespace big;
 
 namespace big
@@ -32,15 +34,15 @@ namespace big
 			return 0;
 
 		const auto weapon_firing = WeaponFiring::GetInstance();
-		if (!IsValidPtr(weapon_firing))
+		if (!IsValidPtrWithVTable(weapon_firing))
 			return 0;
 
 		const auto firing = weapon_firing->m_pPrimaryFire;
-		if (!IsValidPtr(firing))
+		if (!IsValidPtrWithVTable(firing))
 			return 0;
 
 		const auto firing_data = firing->m_FiringData;
-		if (!IsValidPtr(firing_data))
+		if (!IsValidPtrWithVTable(firing_data))
 			return 0;
 
 		const auto weapon_modifier = client_weapon->m_pWeaponModifier;
@@ -67,63 +69,75 @@ namespace big
 		float gravity = bullet->m_Gravity;
 		Vector3 my_velocity = *local_entity->GetVelocity();
 		Vector3 enemy_velocity = *enemy->GetVelocity();
+		*(BYTE*)((uintptr_t)enemy + 0x1A) = 159;
 
 		return DoPrediction(shoot_space.Translation() + spawn_offset, aim_point, my_velocity, enemy_velocity, initial_speed, gravity, zero_entry);
 	}
 
 	float AimbotPredictor::DoPrediction(const Vector3& shoot_space, Vector3& aim_point, const Vector3& my_velocity, const Vector3& enemy_velocity, const Vector3& bullet_speed, const float gravity, const WeaponZeroingEntry& zero_entry)
 	{
-		Vector3 relative_pos = (aim_point - shoot_space);
-		Vector3 gravity_vec = Vector3(0, fabs(gravity), 0);
-		auto f_approx_pos = [](Vector3& CurPos, const Vector3& Velocity, const Vector3& Accel, const float Time)->Vector3 {
-			return CurPos + Velocity * Time + .5f * Accel * Time * Time;
-			};
+		Vector3 relative_pos = aim_point - shoot_space;
+		Vector3 gravity_vec(0, -fabs(gravity), 0);
 
-		float bullet_speed_magnitude = bullet_speed.Length();
+		float shortest_air_time = FLT_MAX;
 
-		float a = .25f * gravity_vec.Dot(gravity_vec);
-		float b = enemy_velocity.Dot(gravity_vec);
-		float c = relative_pos.Dot(gravity_vec) + enemy_velocity.Dot(enemy_velocity) - (bullet_speed_magnitude * bullet_speed_magnitude);
-		float d = 2.0f * (relative_pos.Dot(enemy_velocity));
-		float e = relative_pos.Dot(relative_pos);
-
-		// Calculate time projectile is in air
-		std::vector<double> solutions;
-		int num_solutions = m_Solver->SolveQuartic(a, b, c, d, e, solutions);
-
-		// Find smallest non-negative real root
-		float shortest_air_time = 99999.0f;
-		for (int i = 0; i < num_solutions; i++)
+		if (gravity != 0.0f)
 		{
-			double air_time = solutions[i];
-			if (air_time < 0)
-				continue;
+			const double a = 0.25 * gravity * gravity;
+			const double b = enemy_velocity.y * gravity;
+			const double c = (relative_pos.y * gravity) + enemy_velocity.Dot(enemy_velocity) - bullet_speed.LengthSquared();
+			const double d = 2.0 * relative_pos.Dot(enemy_velocity);
+			const double e = relative_pos.Dot(relative_pos);
 
-			if (air_time < shortest_air_time)
-				shortest_air_time = (float)air_time;
+			std::vector<double> solutions;
+			int num_solutions = m_Solver->SolveQuartic(a, b, c, d, e, solutions);
+
+			for (double air_time : solutions)
+			{
+				if (air_time > 0 && air_time < shortest_air_time)
+					shortest_air_time = static_cast<float>(air_time);
+			}
 		}
-
-		if (shortest_air_time == 99999.0f)
+		else
 		{
-			// Handle case where no valid air time was found
-			return 0.0f;
+			const double a = enemy_velocity.Dot(enemy_velocity) - bullet_speed.LengthSquared();
+			const double b = 2.0 * relative_pos.Dot(enemy_velocity);
+			const double c = relative_pos.Dot(relative_pos);
+
+			if (a != 0.0f)
+			{
+				double d = b * b - (4 * a * c);
+				if (d >= 0.0f)
+				{
+					const auto t1 = (-b - sqrt(d)) / (2.0f * a);
+					const auto t2 = (-b + sqrt(d)) / (2.0f * a);
+
+					if (t1 > 0.f && t2 > 0.f)
+						shortest_air_time = std::min<float>(t1, t2);
+					else if (t1 < 0.f && t2 > 0.f)
+						shortest_air_time = t2;
+					else if (t1 > 0.f && t2 < 0.f)
+						shortest_air_time = t1;
+				}
+			}
 		}
 
 		if (shortest_air_time == FLT_MAX)
-			return 0.0f; // No valid solution found
-
-		// Extrapolate position on velocity, and account for bullet drop
-		aim_point = f_approx_pos(aim_point, enemy_velocity, gravity_vec, shortest_air_time);
-
-		if (zero_entry.m_ZeroDistance == -1.0f)
 			return 0.0f;
 
-		// Refine zeroing approximation
-		float zero_air_time = zero_entry.m_ZeroDistance / bullet_speed_magnitude;
-		float zero_drop = (.5f * fabs(gravity) * zero_air_time * zero_air_time);
-		float theta = atan2(zero_drop, zero_entry.m_ZeroDistance);
+		aim_point = aim_point + (enemy_velocity * shortest_air_time);
+		if (gravity != 0.0f)
+			aim_point.y += 0.5f * gravity * shortest_air_time * shortest_air_time;
 
-		return theta;
+		float zero_angle = 0.0f;
+		if (zero_entry.m_ZeroDistance > 0.0f)
+		{
+			float zero_air_time = zero_entry.m_ZeroDistance / bullet_speed.Length();
+			float zero_drop = 0.5f * fabs(gravity) * zero_air_time * zero_air_time;
+			zero_angle = atan2(zero_drop, zero_entry.m_ZeroDistance);
+		}
+
+		return zero_angle;
 	}
 
 	AimbotSmoother::AimbotSmoother()
@@ -176,7 +190,7 @@ namespace big
 		for (int i = 0; i < MAX_PLAYERS; i++)
 		{
 			const auto player = player_manager->m_ppPlayers[i];
-			if (!IsValidPtr(player))
+			if (!IsValidPtrWithVTable(player))
 				continue;
 
 			m_PlayerList.push_back(player);
@@ -198,29 +212,57 @@ namespace big
 		if (!player_manager) return;
 
 		const auto local_player = player_manager->m_pLocalPlayer;
-		if (!local_player) return;
+		if (!IsValidPtrWithVTable(local_player)) return;
 
 		for (const auto player : m_PlayerList)
 		{
-			if (!IsValidPtr(player))
+			if (!IsValidPtrWithVTable(player))
 				continue;
 
 			if (player->m_TeamId == local_player->m_TeamId)
 				continue;
 
 			const auto soldier = player->GetSoldier();
-			if (!IsValidPtr(soldier))
+			if (!IsValidPtrWithVTable(soldier))
 				continue;
 
-			if (soldier->m_Occluded)
-				continue;
+			if (!g_settings.aim_must_be_visible)
+			{
+				if (soldier->m_Occluded)
+					continue;
+		    }
 
 			const auto ragdoll = soldier->m_pRagdollComponent;
 			if (!IsValidPtr(ragdoll))
 				continue;
 
+			// Bone selection
 			Vector3 head_vec;
-			if (!ragdoll->GetBone((UpdatePoseResultData::BONES)g_settings.aim_bone, head_vec))
+			bool got_bone = false;
+
+			if (g_settings.aim_bone_priority)
+			{
+				static const UpdatePoseResultData::BONES bone_priority[] =
+				{
+					// From upper body to lower body
+					UpdatePoseResultData::BONES::Head,
+					UpdatePoseResultData::BONES::Spine1,
+					UpdatePoseResultData::BONES::Hips
+				};
+
+				for (const auto& bone : bone_priority)
+				{
+					if (ragdoll->GetBone(bone, head_vec))
+					{
+						got_bone = true;
+						break;
+					}
+				}
+			}
+			else
+				got_bone = ragdoll->GetBone((UpdatePoseResultData::BONES)g_settings.aim_bone, head_vec);
+
+			if (!got_bone)
 				continue;
 
 			Vector3 screen_vec;
@@ -278,9 +320,15 @@ namespace plugins
 {
 	void aimbot(float delta_time)
 	{
-		if (!g_settings.aimbot) return;
+		// Controller support
+		bool using_controller = g_settings.aim_support_controller && is_left_trigger_pressed(0.5f);
 
-		if (!GetAsyncKeyState(g_settings.aim_key))
+		// Pressed status
+		auto is_pressed = [=]() {
+			return GetAsyncKeyState(g_settings.aim_key) != 0 || using_controller;
+		};
+
+		if (!is_pressed())
 			return;
 
 		const auto game_context = ClientGameContext::GetInstance();
@@ -290,12 +338,12 @@ namespace plugins
 		if (!player_manager) return;
 
 		const auto local_player = player_manager->m_pLocalPlayer;
-		if (!local_player) return;
+		if (!IsValidPtrWithVTable(local_player)) return;
 
 		if (local_player->GetVehicle()) return;
 
 		const auto local_soldier = local_player->GetSoldier();
-		if (!local_soldier) return;
+		if (!IsValidPtrWithVTable(local_soldier)) return;
 
 		if (!local_soldier->IsAlive()) return;
 
@@ -307,6 +355,15 @@ namespace plugins
 
 		const auto client_weapon = weapon->m_pWeapon;
 		if (!client_weapon) return;
+
+		// Controller support
+		if (using_controller)
+		{
+			// Simulate a little bit of mouse movement, otherwise aiming simulation won't be valid
+			const auto mouse_device = BorderInputNode::GetInstance()->m_pMouse->m_pDevice;
+			if (IsValidPtr(mouse_device))
+				mouse_device->m_Buffer.x = mouse_device->m_Buffer.x - 1;
+		}
 
 		const auto aiming_simulation = weapon->m_pAuthoritativeAiming;
 		if (!aiming_simulation) return;
@@ -340,7 +397,11 @@ namespace plugins
 
 		if (target.m_Player != m_PreviousTarget.m_Player)
 		{
-			Vector2 vec_rand = { generate_random_float(g_settings.aim_min_time_to_target, g_settings.aim_max_time_to_target), generate_random_float(g_settings.aim_min_time_to_target, g_settings.aim_max_time_to_target) };
+			Vector2 vec_rand =
+			{
+				generate_random_float(g_settings.aim_min_time_to_target, g_settings.aim_max_time_to_target),
+				generate_random_float(g_settings.aim_min_time_to_target, g_settings.aim_max_time_to_target)
+			};
 			m_AimbotSmoother.ResetTimes(vec_rand);
 		}
 
@@ -350,10 +411,15 @@ namespace plugins
 		float horizontal_distance = sqrt(vDir.x * vDir.x + vDir.z * vDir.z);
 		//vDir.Normalize();
 
+		// Vertical angle
+		float vertical_angle = atan2(vDir.y, sqrt(vDir.x * vDir.x + vDir.z * vDir.z));
+
+		// Adjust the elevation based on distance and vertical angle
+		float elevation_adjustment = vertical_angle * (1.0f - exp(-vDir.Length() / 175.0f)); // 175 works best, tuning is possible
+
 		Vector2 BotAngles = {
 			-atan2(vDir.x, vDir.z),
-			atan2(vDir.y, horizontal_distance)
-			//atan2(vDir.y, vDir.Length())
+			atan2(vDir.y, sqrt(vDir.x * vDir.x + vDir.z * vDir.z)) - elevation_adjustment
 		};
 
 		BotAngles -= aiming_simulation->m_Sway;
@@ -377,16 +443,19 @@ namespace plugins
 		if (!player_manager) return;
 
 		const auto local_player = player_manager->m_pLocalPlayer;
-		if (!local_player) return;
+		if (!IsValidPtrWithVTable(local_player)) return;
 
 		if (local_player->GetVehicle()) return;
 
 		const auto local_soldier = local_player->GetSoldier();
-		if (!local_soldier) return;
+		if (!IsValidPtrWithVTable(local_soldier)) return;
 
 		if (!local_soldier->IsAlive()) return;
 
+		// FOV
+		float fov_radius = get_fov_radius(g_settings.aim_fov, (float)g_globals.g_width, (float)g_globals.g_height);
+
 		if (g_settings.aim_fov_method && g_settings.aim_draw_fov)
-			m_drawing->AddCircle(ImVec2(g_globals.g_width / 2.f, g_globals.g_height / 2.f), g_settings.aim_fov, ImColor(255, 255, 255, 255));
+			m_drawing->AddCircle(ImVec2(g_globals.g_width / 2.f, g_globals.g_height / 2.f), fov_radius, g_settings.aim_fov_color);
 	}
 }

@@ -32,7 +32,7 @@ namespace big
 
 	IDXGISwapChain* get_swapchain();
 	bool punkbuster_capturing();
-	FiringFunctionData* get_weapon_firing();
+	WeaponFiring* get_weapon_firing();
 
 	int generate_random_int(int min, int max);
 	float generate_random_float(float min, float max);
@@ -40,4 +40,7 @@ namespace big
 
 	std::string current_time();
 	bool is_process_running(const wchar_t* process_name);
+
+	bool is_controller_connected();
+	bool is_left_trigger_pressed(float threshold = 0.5f);
 }

@@ -21,10 +21,10 @@ namespace plugins
 		if (!player_manager) return;
 
 		const auto local_player = player_manager->m_pLocalPlayer;
-		if (!local_player) return;
+		if (!IsValidPtrWithVTable(local_player)) return;
 
 		const auto local_soldier = local_player->GetSoldier();
-		if (!local_soldier) return;
+		if (!IsValidPtrWithVTable(local_soldier)) return;
 
 		if (!local_soldier->IsAlive()) return;
 
@@ -43,9 +43,9 @@ namespace plugins
 		}
 
 		// Vehicle
-		if (IsValidPtr(vehicle))
+		if (IsValidPtrWithVTable(vehicle))
 		{
-			if (IsValidPtr(vehicle->m_pHealthComp) && vehicle->m_pHealthComp->m_VehicleHealth)
+			if (IsValidPtrWithVTable(vehicle->m_pHealthComp) && vehicle->m_pHealthComp->m_VehicleHealth)
 				health_vehicle = vehicle->m_pHealthComp->m_VehicleHealth;
 
 			const auto data = get_vehicle_data(vehicle);

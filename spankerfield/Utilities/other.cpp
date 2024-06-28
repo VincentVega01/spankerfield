@@ -12,12 +12,12 @@ namespace big
 		if (!player_manager) return nullptr;
 
 		const auto local_player = player_manager->m_pLocalPlayer;
-		if (!local_player) return nullptr;
+		if (!IsValidPtrWithVTable(local_player)) return nullptr;
 
 		for (int i = 0; i < MAX_PLAYERS; i++)
 		{
 			const auto player = player_manager->m_ppPlayers[i];
-			if (!player) continue;
+			if (!IsValidPtrWithVTable(player)) continue;
 
 			const auto name = player->m_Name;
 			if (!name) continue;
@@ -46,7 +46,10 @@ namespace big
 
 	VehicleData* get_vehicle_data(ClientVehicleEntity* vehicle)
 	{
-		return vehicle->m_Data;
+		const auto data = vehicle->m_Data;
+		if (!IsValidPtrWithVTable(data)) return nullptr;
+
+		return data;
 	}
 
 	TransformAABBStruct get_transform(ClientPlayer* player)
@@ -57,7 +60,7 @@ namespace big
 		if (!soldier) return placeholder;
 
 		const auto vehicle = player->GetVehicle();
-		vehicle ? vehicle->GetAABB(&placeholder) : soldier->GetAABB(&placeholder);
+		IsValidPtrWithVTable(vehicle) ? vehicle->GetAABB(&placeholder) : soldier->GetAABB(&placeholder);
 
 		return placeholder;
 	}
@@ -106,7 +109,7 @@ namespace big
 		return (*(int*)(*screenshot_module + 0x14) != -1);
 	}
 
-	FiringFunctionData* get_weapon_firing()
+	WeaponFiring* get_weapon_firing()
 	{
 		const auto game_context = ClientGameContext::GetInstance();
 		if (!game_context) return nullptr;
@@ -125,13 +128,7 @@ namespace big
 			const auto weapon = WeaponFiring::GetInstance();
 			if (!weapon) return nullptr;
 
-			const auto primary_fire = weapon->m_pPrimaryFire;
-			if (!primary_fire) return nullptr;
-
-			const auto firing_data = primary_fire->m_FiringData;
-			if (!firing_data) return nullptr;
-
-			return firing_data;
+			return weapon;
 		}
 
 		return nullptr;
@@ -203,6 +200,36 @@ namespace big
 		} while (Process32Next(snapshot, &entry));
 
 		CloseHandle(snapshot);
+		return false;
+	}
+
+	bool is_controller_connected()
+	{
+		XINPUT_STATE state;
+		ZeroMemory(&state, sizeof(XINPUT_STATE));
+
+		DWORD dwResult = XInputGetState(0, &state);
+
+		if (dwResult == ERROR_SUCCESS)
+			return true;
+		else
+			return false;
+	}
+
+	bool is_left_trigger_pressed(float threshold)
+	{
+		XINPUT_STATE state;
+		ZeroMemory(&state, sizeof(XINPUT_STATE));
+
+		DWORD result = XInputGetState(0, &state);
+
+		if (result == ERROR_SUCCESS)
+		{
+			float trigger_value = state.Gamepad.bLeftTrigger / 255.0f;
+
+			return trigger_value > threshold;
+		}
+
 		return false;
 	}
 
