@@ -14,21 +14,24 @@ namespace plugins
 
 	std::filesystem::path get_path()
 	{
-		auto file_path = get_appdata_folder();
-		file_path /= xorstr_("Blacklisted.json");
-
-		return file_path;
+		return std::filesystem::path(get_appdata_folder()) / xorstr_("Blacklisted.json");
 	}
 
 	nlohmann::json get_json()
 	{
 		auto file_path = get_path();
-
 		nlohmann::json players;
-		std::ifstream file(file_path);
 
-		if (!file.fail())
-			players = nlohmann::json::parse(file);
+		try
+		{
+			std::ifstream file(file_path);
+			if (file.is_open()) 
+				players = nlohmann::json::parse(file);
+		}
+		catch (const std::exception& e)
+		{
+			LOG(INFO) << xorstr_("Error reading JSON file: ") << e.what();
+		}
 
 		return players;
 	}
@@ -44,21 +47,19 @@ namespace plugins
 
 	void parse_blacklist()
 	{
-		nlohmann::json players = get_json();
+		const auto players = get_json();
 
 		std::vector<blacklisted_s> temp;
-		for (auto& el : players.items())
+		for (const auto& [name, data] : players.items())
 		{
 			blacklisted_s element;
-			element.name = el.key();
-			element.persona_id = players[el.key()][xorstr_("Persona ID")];
-
+			element.name = name;
+			element.persona_id = data["Persona ID"];
 			temp.push_back(element);
 		}
 
-		if (temp.size() > 0)
-			blacklisted = temp;
-
+		if (!temp.empty())
+			blacklisted = std::move(temp);
 	}
 
 	void request_id_change(std::string name)
@@ -69,7 +70,7 @@ namespace plugins
 			return;
 
 		const auto player = get_player_by_name(name);
-		if (IsValidPtr(player))
+		if (IsValidPtrWithVTable(player))
 		{
 			const auto id = player->m_onlineId.m_personaid;
 			if (!id) return;
@@ -90,7 +91,7 @@ namespace plugins
 			return;
 
 		const auto player = get_player_by_name(name);
-		if (IsValidPtr(player))
+		if (IsValidPtrWithVTable(player))
 		{
 			const auto nickname = player->m_Name;
 			if (!nickname) return;
@@ -113,7 +114,7 @@ namespace plugins
 			return;
 
 		const auto player = get_player_by_name(name);
-		const auto val = IsValidPtr(player) ? player->m_onlineId.m_personaid : exclusive;
+		const auto val = IsValidPtrWithVTable(player) ? player->m_onlineId.m_personaid : exclusive;
 
 		players[name][xorstr_("Persona ID")] = val;
 		players[name][xorstr_("Time added")] = current_time();
@@ -167,13 +168,13 @@ namespace plugins
 		if (!player_manager) return;
 
 		const auto local_player = player_manager->m_pLocalPlayer;
-		if (!local_player) return;
+		if (!IsValidPtrWithVTable(local_player)) return;
 
 		float offset = 0.f;
 		for (int i = 0; i < MAX_PLAYERS; i++)
 		{
 			const auto player = player_manager->m_ppPlayers[i];
-			if (!player)
+			if (!IsValidPtrWithVTable(player))
 				continue;
 
 			if (player == local_player)

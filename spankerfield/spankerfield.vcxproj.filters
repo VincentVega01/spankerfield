@@ -84,7 +84,7 @@
     <ClCompile Include="SDK\type_info.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="Utilities\vtablehook.cpp">
+    <ClCompile Include="Utilities\vmt_hook.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
     <ClCompile Include="Utilities\w2s.cpp">
@@ -183,6 +183,16 @@
     <ClCompile Include="Features\Kill Sound\kill_sound.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
+<<<<<<< HEAD
+    <ClCompile Include="Features\Autofire\autofire.cpp">
+=======
+    <ClCompile Include="Features\Refresh Hook\refresh_hook.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="Features\Rainbow Mode\rainbow_mode.cpp">
+>>>>>>> upstream/main
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Features\ESP\esp.h">
@@ -263,7 +273,7 @@
     <ClInclude Include="SDK\type_info.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="Utilities\vtablehook.h">
+    <ClInclude Include="Utilities\vmt_hook.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="Utilities\w2s.h">
@@ -374,7 +384,7 @@
     <ClInclude Include="Utilities\math.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="Rendering\bone_manager.h">
+    <ClInclude Include="Rendering\Maps\bone_manager.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="Features\Overheat\overheat.h">
@@ -413,13 +423,26 @@
     <ClInclude Include="Features\Anti AFK\anti_afk.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="Rendering\nicknames.h">
+    <ClInclude Include="Rendering\Maps\nicknames.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="Features\Name Spoofer\name_spoofer.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="Features\Kill Sound\kill_sound.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+<<<<<<< HEAD
+    <ClInclude Include="Features\Autofire\autofire.h">
+=======
+    <ClInclude Include="Features\Refresh Hook\refresh_hook.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="Features\Rainbow Mode\rainbow_mode.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering\Maps\key_map.h">
+>>>>>>> upstream/main
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>
