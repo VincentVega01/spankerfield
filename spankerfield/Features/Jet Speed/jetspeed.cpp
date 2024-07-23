@@ -48,9 +48,10 @@ namespace plugins
 			g_settings.jet_isActive = true;		// activate again cause of shit toggle
 		}
 
-		if ((vehicle_data->IsInJet())
-			&& (!border_input_node->m_pKeyboard->m_pDevice->m_Current[BYTE(Keyboard::InputKeys::IDK_Space)])	// disable while braking
-			&& (g_settings.jet_isActive))	
+		if ((vehicle_data->IsInJet()) &&
+			(!border_input_node->m_pKeyboard->m_pDevice->m_Current[BYTE(Keyboard::InputKeys::IDK_Space)]) && 	// disable while braking
+			(!border_input_node->m_pKeyboard->m_pDevice->m_Current[BYTE(Keyboard::InputKeys::IDK_W)]) && 	// disable while accel
+			(g_settings.jet_isActive))	
 		{
 			const auto input_cache = border_input_node->m_InputCache;
 			if (!input_cache) return;

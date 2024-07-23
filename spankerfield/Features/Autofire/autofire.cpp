@@ -6,7 +6,6 @@ using namespace big;
 
 namespace big
 {
-    Timer fireTimer;
     bool canFire = true;
 }
 
@@ -51,11 +50,7 @@ namespace plugins
             current_weapon_class != WeaponClass::Shotgun)
             return;
 
-        if (weapon->m_JustShot)
-        {
-            device->m_Buffer.buttons[0] = false;
-        }
-        else if (GetAsyncKeyState(VK_LBUTTON) & 0x8000)
+        if (GetAsyncKeyState(VK_LBUTTON) & 0x8000)
         {
             const auto input_cache = border_input_node->m_InputCache;
             if (!input_cache) return;
@@ -75,18 +70,17 @@ namespace plugins
             {
                 input[ConceptReload] = 0.f;
 
-                if (canFire) {
-                    input[ConceptFire] = 1.f;
-                    canFire = false;
-
-                    fireTimer.start(generate_random_int(90, 140), []() {
-                        canFire = true;
-                        });
+                if (weapon->m_JustShot) {
+                    input[ConceptFire] = 0.f;
+                    device->m_Buffer.buttons[0] = false;
                 }
                 else {
-                    input[ConceptFire] = 0.f;
+                    input[ConceptFire] = 1.f;
                 }
             }
+        }
+        else {
+            return;
         }
     }
 }

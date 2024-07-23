@@ -186,17 +186,17 @@ namespace plugins
                     case 0: // Bottom
                         m_drawing->DrawBoxOutline(box_coords[0].x - hb_width_offset, box_coords[1].y + hb_height_offset, hb_width, hb_height, ImColor(0, 0, 0, 255));
                         m_drawing->DrawFillArea(box_coords[0].x - hb_width_offset, box_coords[1].y + hb_height_offset, hb_perc_width, hb_height, hb_color);
-                        
+
                         break;
                     case 1: // Top
                         m_drawing->DrawBoxOutline(box_coords[0].x - hb_width_offset, box_coords[0].y - hb_height_offset, hb_width, hb_height, ImColor(0, 0, 0, 255));
                         m_drawing->DrawFillArea(box_coords[0].x - hb_width_offset, box_coords[0].y - hb_height_offset, hb_perc_width, hb_height, hb_color);
-                        
+
                         break;
                     case 2: // Left
                         m_drawing->DrawBoxOutline(box_coords[0].x - hb_height_offset - hb_width_vertical, box_coords[0].y, hb_width_vertical, box_height, ImColor(0, 0, 0, 255));
                         m_drawing->DrawFillArea(box_coords[0].x - hb_height_offset - hb_width_vertical, box_coords[0].y + box_height - hb_perc_height, hb_width_vertical, hb_perc_height, hb_color);
-                        
+
                         break;
                     case 3: // Right
                         m_drawing->DrawBoxOutline(box_coords[1].x + hb_height_offset, box_coords[0].y, hb_width_vertical, box_height, ImColor(0, 0, 0, 255));
@@ -213,13 +213,13 @@ namespace plugins
                 {
                     // Better approach than what spankerfield had before
                     auto draw_esp_text = [&](float& x, float& y, const char* text, ImColor color, bool condition)
-                    {
-                        if (condition)
                         {
-                            m_drawing->AddText(x, y, color, 14.f, FL_NONE, text);
-                            y += g_settings.esp_text_spacing;
-                        }
-                    };
+                            if (condition)
+                            {
+                                m_drawing->AddText(x, y, color, 14.f, FL_NONE, text);
+                                y += g_settings.esp_text_spacing;
+                            }
+                        };
 
                     // Drawing part
                     ImColor text_color = teammate ? g_settings.esp_teammate_color : (IsValidPtr(soldier) && soldier->m_Occluded) ? g_settings.text_color_occluded : g_settings.text_color;

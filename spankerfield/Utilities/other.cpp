@@ -3,6 +3,23 @@
 
 namespace big
 {
+	static bool keyReleased = true;
+
+	void toggleKeyPress(char key, bool& toggle)
+	{
+		SHORT keyState = GetAsyncKeyState(key);
+
+		if ((keyState & 0x8000) && keyReleased) 
+		{
+			toggle = !toggle;
+			keyReleased = false;
+		}
+		else if (!(keyState & 0x8000) && !keyReleased) 
+		{
+			keyReleased = true;
+		}
+	}
+
 	ClientPlayer* get_player_by_name(std::string nick)
 	{
 		const auto game_context = ClientGameContext::GetInstance();

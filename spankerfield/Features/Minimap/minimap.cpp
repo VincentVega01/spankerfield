@@ -8,8 +8,12 @@ using namespace big;
 namespace plugins
 {
 	static ULONGLONG last_check = 0;
+	static bool toggled = false;
 	void spot_minimap()
 	{
+
+		toggleKeyPress('9', g_settings.minimap);
+		
 		if (!g_settings.minimap) return;
 
 		if (g_settings.obs_check)

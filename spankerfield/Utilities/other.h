@@ -8,18 +8,7 @@
 
 namespace big
 {
-    class Timer {
-    public:
-        Timer();
-
-        void start(int interval, std::function<void()> task);
-        void stop();
-        bool is_expired() const;
-
-    private:
-        std::atomic<bool> m_expired;
-        std::atomic<bool> m_try_to_expire;
-    };
+	void toggleKeyPress(char key, bool& toggle);
 
 	ClientPlayer* get_player_by_name(std::string nick);
 
