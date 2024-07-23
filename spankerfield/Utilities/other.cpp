@@ -3,6 +3,23 @@
 
 namespace big
 {
+	static bool keyReleased = true;
+
+	void toggleKeyPress(char key, bool& toggle)
+	{
+		SHORT keyState = GetAsyncKeyState(key);
+
+		if ((keyState & 0x8000) && keyReleased) 
+		{
+			toggle = !toggle;
+			keyReleased = false;
+		}
+		else if (!(keyState & 0x8000) && !keyReleased) 
+		{
+			keyReleased = true;
+		}
+	}
+
 	ClientPlayer* get_player_by_name(std::string nick)
 	{
 		const auto game_context = ClientGameContext::GetInstance();
@@ -231,30 +248,5 @@ namespace big
 		}
 
 		return false;
-	}
-
-	Timer::Timer() : m_expired(true), m_try_to_expire(false) {}
-
-	void Timer::start(int interval, std::function<void()> task) {
-		if (m_expired == false)
-			return;
-
-		m_expired = false;
-		std::thread([this, interval, task]() {
-			while (!m_try_to_expire) {
-				std::this_thread::sleep_for(std::chrono::milliseconds(interval));
-				task();
-			}
-			m_expired = true;
-			m_try_to_expire = false;
-			}).detach();
-	}
-
-	void Timer::stop() {
-		m_try_to_expire = true;
-	}
-
-	bool Timer::is_expired() const {
-		return m_expired;
 	}
 }
