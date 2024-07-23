@@ -101,6 +101,8 @@ namespace big
 			{
 				ImGui::Checkbox(xorstr_("Aimbot"), &g_settings.aimbot);
 				ImGui::SameLine();
+				ImGui::Checkbox(xorstr_("Aim Point Only"), &g_settings.aim_point_only);
+				ImGui::SameLine();
 				ImGui::Checkbox(xorstr_("FOV target selection"), &g_settings.aim_fov_method);
 				ImGui::SameLine();
 				ImGui::Checkbox(xorstr_("Aim through walls"), &g_settings.aim_must_be_visible);
@@ -363,6 +365,9 @@ namespace big
 				ImGui::PushItemWidth(300.f);
 				ImGui::SliderInt(xorstr_("Health location"), &g_settings.esp_health_location, 0, 3);
 				ImGui::PopItemWidth();
+
+				ImGui::Checkbox(xorstr_("Draw Aim Point"), &g_settings.esp_draw_aim_point);
+				color_wrapper(xorstr_("Aim Point##APC"), &g_settings.esp_aim_point_color);
 
 				ImGui::Separator();
 

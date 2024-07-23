@@ -390,11 +390,21 @@ namespace plugins
 		AimbotTarget target = m_PlayerManager.get_closest_crosshair_player();
 		if (!IsValidPtr(target.m_Player)) return;
 
-		if (!target.m_HasTarget) return;
+		if (!target.m_HasTarget)
+		{
+			g_globals.g_hasPredictedAimPoint = false;
+			return;
+		}
+		else
+		{
+			g_globals.g_hasPredictedAimPoint = true;
+		}
 
 		Vector3 temporary_aim = target.m_WorldPosition;
 		float zero_theta_offset = m_AimbotPredictor.PredictLocation(local_soldier, target.m_Player->GetSoldier(), temporary_aim, shoot_space);
 		target.m_WorldPosition = temporary_aim;
+
+		g_globals.g_pred_aim_point = target.m_WorldPosition;
 
 		if (g_settings.aim_max_time_to_target <= 0.f) return;
 

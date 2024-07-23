@@ -15,8 +15,8 @@ namespace big
 		bool rainbow_mode;
 		float rainbow_speed{ 0.5f };
 
-		bool spoof_name;
-		bool spoof_restore;
+		bool spoof_name{ false };
+		bool spoof_restore{ false };
 		char original_name[16];
 		char spoofed_name[16];
 
@@ -24,6 +24,7 @@ namespace big
 		bool aim_support_controller;
 		bool aim_must_be_visible{ true };
 		bool aim_must_not_reload{ true };
+		bool aim_point_only{ true };
 		bool aim_fov_method{ true };
 		bool aim_bone_priority{ true };
 		bool aim_draw_fov;
@@ -31,7 +32,7 @@ namespace big
 		ImColor aim_fov_color{ 255, 255, 255, 200 };
 		float aim_min_time_to_target{ 0.4f };
 		float aim_max_time_to_target{ 0.8f };
-		int aim_key{ VK_LMENU };
+		int aim_key{ VK_RBUTTON };
 		int aim_bone{ UpdatePoseResultData::BONES::Head };
 
 		bool no_recoil;
@@ -40,8 +41,8 @@ namespace big
 		bool anti_afk{ true };
 		int anti_afk_timer{ 150000 };
 
-		bool unlock_all;
-		bool no_hc_restrictions;
+		bool unlock_all{ false };
+		bool no_hc_restrictions{ false };
 
 		bool overheat_control{ true };
 		float overheat_control_critical{ 0.50f };
@@ -61,6 +62,9 @@ namespace big
 		float esp_distance{ 10000.f };
 		ImColor esp_teammate_color{ 63, 147, 216, 255 };
 		ImColor esp_additional_tags_color{ 228, 213, 106, 255 };
+
+		bool esp_draw_aim_point{ true };
+		ImColor esp_aim_point_color{ 0, 255, 0, 255 };
 
 		bool esp_draw_box{ true };
 		int esp_box_style{ 4 };

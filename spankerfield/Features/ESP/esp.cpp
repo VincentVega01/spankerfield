@@ -261,6 +261,21 @@ namespace plugins
                     }
                 }
             }
+
+            if (g_settings.esp_draw_aim_point)
+            {
+                if (g_globals.g_hasPredictedAimPoint)
+                {
+                    Vector2 aimpoint_screen_coords;
+                    if (world_to_screen(g_globals.g_pred_aim_point, aimpoint_screen_coords))
+                    {
+                        m_drawing->AddCircleFilled(
+                            ImVec2(aimpoint_screen_coords.x, aimpoint_screen_coords.y),
+                            6.0f,
+                            g_settings.esp_aim_point_color);
+                    }
+                }
+            }
         }
     }
 }
