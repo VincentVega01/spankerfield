@@ -21,6 +21,7 @@ namespace big
 		char spoofed_name[16];
 
 		bool aimbot;
+		bool aim_point_only{ true };
 		bool aim_support_controller;
 		bool aim_must_be_visible{ true };
 		bool aim_must_not_reload{ true };
