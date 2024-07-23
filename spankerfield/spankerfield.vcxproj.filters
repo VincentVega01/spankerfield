@@ -183,14 +183,14 @@
     <ClCompile Include="Features\Kill Sound\kill_sound.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-<<<<<<< HEAD
-    <ClCompile Include="Features\Autofire\autofire.cpp">
-=======
     <ClCompile Include="Features\Refresh Hook\refresh_hook.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
     <ClCompile Include="Features\Rainbow Mode\rainbow_mode.cpp">
->>>>>>> upstream/main
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="ImGui\imgui_tables.cpp">
+    <ClCompile Include="Features\Autofire\autofire.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
   </ItemGroup>
@@ -432,9 +432,7 @@
     <ClInclude Include="Features\Kill Sound\kill_sound.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-<<<<<<< HEAD
     <ClInclude Include="Features\Autofire\autofire.h">
-=======
     <ClInclude Include="Features\Refresh Hook\refresh_hook.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
@@ -442,7 +440,7 @@
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="Rendering\Maps\key_map.h">
->>>>>>> upstream/main
+    <ClInclude Include="Features\Autofire\autofire.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>

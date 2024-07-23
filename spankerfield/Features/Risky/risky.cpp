@@ -4,9 +4,10 @@
 using namespace big;
 namespace plugins
 {
-	void no_recoil()
+	void sway_modify()
 	{
-		if (!g_settings.no_recoil) return;
+		// No point to execude code further at this point
+		if (!g_settings.no_recoil && !g_settings.no_spread) return;
 
 		const auto game_context = ClientGameContext::GetInstance();
 		if (!game_context) return;
@@ -17,15 +18,19 @@ namespace plugins
 		const auto local_player = player_manager->m_pLocalPlayer;
 		if (!IsValidPtrWithVTable(local_player)) return;
 
+		// There can be some game crashes if you use this function in vehicles, for example when firing rockets with an AA
+		if (local_player->GetVehicle()) return;
+
 		const auto local_soldier = local_player->GetSoldier();
 		if (!IsValidPtrWithVTable(local_soldier)) return;
 
 		if (local_soldier->IsAlive())
 		{
 			const auto weapon = WeaponFiring::GetInstance();
-			if (!weapon) return;
+			if (!IsValidPtr(weapon)) return;
 
-			const auto is_hit_type = [weapon]() -> bool
+			// We must verify if the weapon is actually a gun, otherwise the game will crash if we try to access it's recoil
+			auto is_hit_type = [weapon]() -> bool
 			{
 				switch (weapon->GetWeaponClass())
 				{
@@ -56,16 +61,26 @@ namespace plugins
 				}
 			};
 
+			if (!is_hit_type()) return;
+
 			const auto sway = weapon->m_Sway;
-			if (!sway) return;
+			if (!IsValidPtr(sway)) return;
 
 			const auto data = sway->m_Data;
-			if (!data) return;
+			if (!IsValidPtrWithVTable(data)) return;
 
-			if (is_hit_type())
+			if (g_settings.no_recoil)
 			{
 				data->m_ShootingRecoilDecreaseScale = 100.0f;
 				data->m_FirstShotRecoilMultiplier = 0.0f;
+			}
+
+			if (g_settings.no_spread)
+			{
+				*reinterpret_cast<float*>(reinterpret_cast<uintptr_t>(data) + 0x0430) = 0.0f; // m_DeviationScaleFactorZoom
+				*reinterpret_cast<float*>(reinterpret_cast<uintptr_t>(data) + 0x0434) = 0.0f; // m_GameplayDeviationScaleFactorZoom
+				*reinterpret_cast<float*>(reinterpret_cast<uintptr_t>(data) + 0x0438) = 0.0f; // m_DeviationScaleFactorNoZoom
+				*reinterpret_cast<float*>(reinterpret_cast<uintptr_t>(data) + 0x043C) = 0.0f; // m_GameplayDeviationScaleFactorNoZoom
 			}
 		}
 	}
