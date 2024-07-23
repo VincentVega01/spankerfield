@@ -25,15 +25,15 @@ namespace plugins
 		if (!player_manager) return;
 
 		const auto local_player = player_manager->m_pLocalPlayer;
-		if (!local_player) return;
+		if (!IsValidPtrWithVTable(local_player)) return;
 
 		const auto local_soldier = local_player->GetSoldier();
-		if (!local_soldier) return;
+		if (!IsValidPtrWithVTable(local_soldier)) return;
 
 		if (!local_soldier->IsAlive()) return;
 
 		const auto local_vehicle = local_player->GetVehicle();
-		if (!local_vehicle) return;
+		if (!IsValidPtrWithVTable(local_vehicle)) return;
 
 		const auto vehicle_data = get_vehicle_data(local_vehicle);
 		if (!IsValidPtrWithVTable(vehicle_data)) return;
@@ -48,9 +48,10 @@ namespace plugins
 			g_settings.jet_isActive = true;		// activate again cause of shit toggle
 		}
 
-		if ((vehicle_data->IsInJet())
-			&& (!border_input_node->m_pKeyboard->m_pDevice->m_Current[BYTE(Keyboard::InputKeys::IDK_Space)])	// disable while braking
-			&& (g_settings.jet_isActive))	
+		if ((vehicle_data->IsInJet()) &&
+			(!border_input_node->m_pKeyboard->m_pDevice->m_Current[BYTE(Keyboard::InputKeys::IDK_Space)]) && 	// disable while braking
+			(!border_input_node->m_pKeyboard->m_pDevice->m_Current[BYTE(Keyboard::InputKeys::IDK_W)]) && 	// disable while accel
+			(g_settings.jet_isActive))	
 		{
 			const auto input_cache = border_input_node->m_InputCache;
 			if (!input_cache) return;

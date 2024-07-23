@@ -6,6 +6,10 @@ namespace big
 {
 	void features::draw()
 	{
+		// Unfortunately we have to do this
+		plugins::refresh_preframe_hook();
+
+		plugins::rainbow_mode();
 		plugins::draw_screenshots();
 		plugins::draw_crosshair();
 		plugins::draw_spectators();
@@ -31,7 +35,7 @@ namespace big
 		plugins::no_recoil();
 		plugins::overheat_control();
 		plugins::kill_sound();
-		
+
 		if (g_settings.aimbot)
 		{
 			m_PlayerManager.update_players();
@@ -40,5 +44,6 @@ namespace big
 
 		plugins::spot_minimap();
 		plugins::set_jet_speed();
+		plugins::autofire();
 	}
 }
